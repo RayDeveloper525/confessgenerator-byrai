@@ -23,7 +23,7 @@
             background-image: radial-gradient(circle at 50% 50%, #fff0f5 0%, #fff5f8 100%);
             color: var(--text-dark);
             height: 100vh;
-            overflow: hidden; /* Mencegah scroll manual */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -93,6 +93,36 @@
         h2 { font-family: 'Playfair Display', serif; color: var(--accent-pink); margin-bottom: 20px; font-size: 1.8rem; }
         p { line-height: 1.6; color: #555; font-size: 1rem; }
 
+        /* --- Feature: Scratch/Blur Text --- */
+        .blur-container { margin: 20px 0; position: relative; }
+        .blur-text {
+            filter: blur(10px);
+            transition: filter 0.6s ease;
+            cursor: pointer;
+            background: rgba(240, 98, 146, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            user-select: none;
+            display: inline-block;
+        }
+        .blur-text:hover { filter: blur(0); }
+
+        /* --- Feature: Love Meter --- */
+        .meter-box {
+            background: #eee;
+            height: 12px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+        .meter-fill {
+            background: var(--accent-pink);
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
         /* --- Photo Frame --- */
         .photo-frame {
             width: 140px; height: 140px; margin: 0 auto 25px;
@@ -102,19 +132,19 @@
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
 
         /* --- Buttons --- */
-        .btn-wrap { margin-top: 30px; display: flex; justify-content: center; gap: 15px; position: relative; height: 50px; }
+        .btn-wrap { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; align-items: center; position: relative; }
         .btn {
             padding: 12px 35px; border-radius: 50px; border: none;
             font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; width: 100%; max-width: 250px;
         }
         .btn-next { background: var(--accent-pink); color: white; box-shadow: 0 4px 15px rgba(240, 98, 146, 0.3); }
-        .btn-next:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(240, 98, 146, 0.4); }
+        .btn-mikir { background: transparent; color: var(--accent-pink); border: 1px solid var(--accent-pink); font-size: 0.8rem; }
         
-        #btn-no { background: #eee; color: #888; position: absolute; }
+        #btn-no { background: #eee; color: #888; position: absolute; width: auto; }
 
-        /* --- Typing Container --- */
-        #typewriter { font-style: italic; min-height: 3em; color: #888; margin-top: 10px; font-size: 0.9rem; }
+        #typewriter { font-style: italic; min-height: 2em; color: #888; margin-top: 10px; font-size: 0.9rem; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -137,8 +167,12 @@
         </div>
 
         <div class="glass-card" id="slide-2">
-            <h2>The Start</h2>
-            <p>Ingat tidak saat kita pertama kali mengobrol? Segalanya terasa sangat sederhana, tapi aku mulai menyadari ada sesuatu yang berbeda.</p>
+            <h2>The Secret</h2>
+            <p>Sebenarnya dari dulu aku mau bilang...</p>
+            <div class="blur-container">
+                <p class="blur-text" id="blur-box">Usap/Sentuh bagian ini</p>
+                <p id="secret-text" class="hidden" style="color: var(--accent-pink); font-weight: 600;">"Kamu itu alasan aku semangat sekolah tiap hari!"</p>
+            </div>
             <div id="typewriter"></div>
             <div class="btn-wrap">
                 <button class="btn btn-next" onclick="nextSlide(3)">Lanjut...</button>
@@ -146,10 +180,14 @@
         </div>
 
         <div class="glass-card" id="slide-3">
-            <h2>The Smile</h2>
-            <p>Caramu tertawa dan caramu melihat dunia selalu berhasil membuat hariku jadi lebih berwarna, sesibuk apapun itu.</p>
-            <div class="btn-wrap">
-                <button class="btn btn-next" onclick="nextSlide(4)">Kemudian...</button>
+            <h2>Chemistry Check</h2>
+            <p id="meter-label">Menganalisis kecocokan kita...</p>
+            <div class="meter-box" id="meter-container">
+                <div class="meter-fill" id="meter-fill"></div>
+            </div>
+            <h1 id="meter-percent" style="color: var(--accent-pink);">0%</h1>
+            <div class="btn-wrap hidden" id="meter-btn">
+                <button class="btn btn-next" onclick="nextSlide(4)">Waduh, Kok Gini? 😂</button>
             </div>
         </div>
 
@@ -159,8 +197,9 @@
             </div>
             <h2>Will you be mine?</h2>
             <p>Aku ingin menjadi alasan di balik senyummu setiap hari. Bagaimana menurutmu?</p>
-            <div class="btn-wrap" id="final-btns">
+            <div class="btn-wrap" id="final-btns" style="height: 180px;">
                 <button class="btn btn-next" onclick="showSuccess()">Tentu! ❤️</button>
+                <button class="btn btn-mikir" onclick="mikirDulu()">Mikir dulu deh...</button>
                 <button class="btn" id="btn-no" onmouseover="moveNo()">Nggak</button>
             </div>
         </div>
@@ -177,28 +216,74 @@
         const music = document.getElementById("bgMusic");
         const musicBtn = document.getElementById("music-toggle");
 
-        // --- Slide Navigation ---
         function nextSlide(step, startMusic = false) {
-            // Sembunyikan semua card
             document.querySelectorAll('.glass-card').forEach(card => card.classList.remove('active'));
             
-            // Tampilkan card tujuan
             setTimeout(() => {
-                document.getElementById(`slide-${step}`).classList.add('active');
+                const target = document.getElementById(`slide-${step}`);
+                target.classList.add('active');
+                
+                // Trigger fitur khusus tiap slide
+                if(step === 2) handleBlur();
+                if(step === 3) handleMeter();
             }, 100);
 
             if (startMusic) {
-                music.play();
+                music.play().catch(() => console.log("User interaction needed for audio"));
                 musicBtn.style.display = "block";
                 startTyping();
             }
         }
 
-        // --- Typing Effect (Slide 2 only) ---
+        // --- Fitur 3: Blur Text Logic ---
+        function handleBlur() {
+            const blurBox = document.getElementById('blur-box');
+            blurBox.addEventListener('mouseover', () => {
+                blurBox.style.display = 'none';
+                document.getElementById('secret-text').classList.remove('hidden');
+            });
+            // Untuk Mobile
+            blurBox.addEventListener('click', () => {
+                blurBox.style.display = 'none';
+                document.getElementById('secret-text').classList.remove('hidden');
+            });
+        }
+
+        // --- Fitur 2: Love Meter Logic ---
+        function handleMeter() {
+            const fill = document.getElementById('meter-fill');
+            const percentTxt = document.getElementById('meter-percent');
+            const box = document.getElementById('meter-container');
+            box.style.display = 'block';
+            
+            let p = 0;
+            const interval = setInterval(() => {
+                p++;
+                fill.style.width = p + '%';
+                percentTxt.innerText = p + '%';
+                
+                if(p === 99) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        percentTxt.innerText = "9999% ERROR!";
+                        percentTxt.style.fontSize = "2rem";
+                        document.getElementById('meter-label').innerText = "Kecocokan Terlalu Tinggi!";
+                        document.getElementById('meter-btn').classList.remove('hidden');
+                    }, 800);
+                }
+            }, 40);
+        }
+
+        // --- Fitur 4: Mikir Dulu Logic ---
+        function mikirDulu() {
+            alert("Waktu berpikir habis! (Limit: 0.001 detik). Silakan pilih 'Tentu!' atau kejar tombol 'Nggak' kalau bisa.");
+        }
+
         function startTyping() {
             const text = "Mungkin ini terdengar biasa, tapi bagiku ini luar biasa...";
             let i = 0;
             const el = document.getElementById("typewriter");
+            el.innerHTML = "";
             function type() {
                 if (i < text.length) {
                     el.innerHTML += text.charAt(i);
@@ -209,7 +294,6 @@
             setTimeout(type, 1000);
         }
 
-        // --- Floating Hearts ---
         function createHeart() {
             const container = document.getElementById('heartContainer');
             const heart = document.createElement('div');
@@ -221,29 +305,23 @@
         }
         setInterval(createHeart, 600);
 
-        // --- No Button Teleport ---
         function moveNo() {
             const btn = document.getElementById('btn-no');
-            const x = (Math.random() - 0.5) * 300;
-            const y = (Math.random() - 0.5) * 300;
+            const x = (Math.random() - 0.5) * 350;
+            const y = (Math.random() - 0.5) * 350;
             btn.style.transform = `translate(${x}px, ${y}px)`;
         }
 
-        // --- Final Success ---
         function showSuccess() {
             nextSlide(5);
             for(let i=0; i<40; i++) setTimeout(createHeart, i*100);
         }
 
         function toggleMusic() {
-            if (music.paused) {
-                music.play();
-                musicBtn.innerText = "🎵";
-            } else {
-                music.pause();
-                musicBtn.innerText = "🔇";
-            }
+            if (music.paused) { music.play(); musicBtn.innerText = "🎵"; } 
+            else { music.pause(); musicBtn.innerText = "🔇"; }
         }
     </script>
 </body>
-</html>
+                </html>
+    
