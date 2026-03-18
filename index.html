@@ -3,57 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confess Generator - Buat Web Cinta Kamu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Confess Pro - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #fff5f8; --accent: #f06292; --glass: rgba(255, 255, 255, 0.6); }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .card { background: var(--glass); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
-        h2 { font-family: 'Playfair Display', serif; color: var(--accent); margin-bottom: 20px; }
-        input, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; font-family: inherit; }
-        .btn { background: var(--accent); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; }
-        .btn:hover { transform: scale(1.02); opacity: 0.9; }
-        #result { margin-top: 20px; display: none; background: white; padding: 15px; border-radius: 10px; border: 1px dashed var(--accent); }
-        #linkResult { width: 100%; border: none; color: var(--accent); font-size: 0.8rem; margin-top: 5px; text-align: center; outline: none; }
+        :root {
+            --accent: #f06292;
+            --bg: #fff5f8;
+            --sidebar-bg: rgba(255, 255, 255, 0.8);
+            --glass: rgba(255, 255, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #333; overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; left: -260px; top: 0; width: 260px; height: 100%;
+            background: var(--sidebar-bg); backdrop-filter: blur(15px);
+            z-index: 1000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px 20px; border-right: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.02);
+        }
+        .sidebar.active { left: 0; }
+        .sidebar h2 { font-family: 'Playfair Display', serif; color: var(--accent); margin-bottom: 40px; }
+        .nav-item {
+            padding: 15px 20px; border-radius: 15px; margin-bottom: 10px;
+            cursor: pointer; transition: 0.3s; color: #666; font-weight: 500;
+        }
+        .nav-item:hover, .nav-item.active { background: var(--accent); color: #fff; }
+
+        /* --- TOPBAR / HEADER --- */
+        .header {
+            padding: 20px; display: flex; align-items: center; gap: 15px;
+            position: sticky; top: 0; background: var(--bg); z-index: 900;
+        }
+        .menu-btn { font-size: 1.5rem; cursor: pointer; color: var(--accent); }
+
+        /* --- CONTENT AREA --- */
+        .content { padding: 20px; max-width: 600px; margin: 0 auto; min-height: 100vh; }
+        .page { display: none; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- GLASS CARD STYLES --- */
+        .glass-card {
+            background: var(--glass); backdrop-filter: blur(10px);
+            border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.5);
+            margin-bottom: 20px; box-shadow: 0 10px 25px rgba(240, 98, 146, 0.05);
+        }
+
+        /* --- FORM & INPUTS --- */
+        .input-group { margin-bottom: 15px; text-align: left; }
+        label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--accent); margin: 0 0 5px 5px; }
+        input, textarea {
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee;
+            background: #fff; outline: none; font-size: 16px; transition: 0.3s;
+        }
+        .btn-main {
+            width: 100%; padding: 15px; border-radius: 50px; border: none;
+            background: var(--accent); color: white; font-weight: 600; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(240, 98, 146, 0.2);
+        }
+
+        /* --- HISTORY LIST --- */
+        .history-item {
+            background: #fff; padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-left: 5px solid var(--accent); font-size: 0.9rem;
+        }
+        .copy-small { background: #eee; padding: 5px 10px; border-radius: 8px; font-size: 0.7rem; cursor: pointer; }
+
+        /* Overlay Background */
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.1); display: none; z-index: 999;
+        }
+        .overlay.active { display: block; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Confess Generator ❤️</h2>
-        <input type="text" id="nama" placeholder="Nama Pasangan (Contoh: Adinda)">
-        <input type="text" id="foto" placeholder="Link Foto (Contoh: bit.ly/foto-dia)">
-        <input type="text" id="musik" placeholder="Link Musik MP3 (Contoh: bit.ly/lagu-kita)">
-        <textarea id="pesan" rows="3" placeholder="Pesan Rahasia..."></textarea>
-        
-        <button class="btn" onclick="generate()">Buat Link Sekarang 🚀</button>
 
-        <div id="result">
-            <p style="font-size: 0.9rem;">Link Kamu Sudah Siap:</p>
-            <input type="text" id="linkResult" readonly>
-            <button class="btn" style="margin-top:10px; font-size: 0.8rem;" onclick="copyLink()">Salin Link</button>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <h2>Confess Pro</h2>
+        <div class="nav-item active" onclick="showPage('dashboard', this)">🏠 Dashboard</div>
+        <div class="nav-item" onclick="showPage('create', this)">✍️ Create Confess</div>
+        <div class="nav-item" onclick="showPage('history', this)">📜 History</div>
+        <div class="nav-item" onclick="window.location.reload()">🔄 Refresh</div>
+    </nav>
+
+    <div class="header">
+        <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+        <h3 id="page-title" style="font-family: 'Playfair Display';">Dashboard</h3>
+    </div>
+
+    <div class="content">
+
+        <div class="page active" id="dashboard">
+            <div class="glass-card">
+                <h2>Halo, Creator! ❤️</h2>
+                <p style="margin-top: 10px; color: #666;">Selamat datang di dashboard Confess Generator. Buat momen tak terlupakan buat si dia hari ini.</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="glass-card" style="flex: 1; text-align: center;">
+                    <h1 id="count-history" style="color: var(--accent);">0</h1>
+                    <p style="font-size: 0.7rem;">Created</p>
+                </div>
+                <div class="glass-card" style="flex: 1; text-align: center;">
+                    <h1 style="color: var(--accent);">Active</h1>
+                    <p style="font-size: 0.7rem;">Status</p>
+                </div>
+            </div>
         </div>
+
+        <div class="page" id="create">
+            <div class="glass-card">
+                <div class="input-group">
+                    <label>Nama Pasangan</label>
+                    <input type="text" id="nama" placeholder="Adinda Sayang">
+                </div>
+                <div class="input-group">
+                    <label>Link Foto (URL)</label>
+                    <input type="text" id="foto" placeholder="https://...">
+                </div>
+                <div class="input-group">
+                    <label>Link Musik (MP3)</label>
+                    <input type="text" id="musik" placeholder="https://...">
+                </div>
+                <div class="input-group">
+                    <label>Pesan Rahasia</label>
+                    <textarea id="pesan" rows="3" placeholder="Tulis ungkapan hati..."></textarea>
+                </div>
+                <button class="btn-main" onclick="generateLink()">Generate & Simpan Link</button>
+            </div>
+
+            <div id="result-box" style="display:none;" class="glass-card">
+                <p style="font-size: 0.8rem; font-weight: 600;">Link Berhasil Dibuat! 🎉</p>
+                <input type="text" id="finalUrl" readonly style="margin-top:10px; font-size: 0.7rem; background: #fff;">
+                <button class="btn-main" style="background: #333; margin-top: 10px;" onclick="copyLink()">Salin Link</button>
+            </div>
+        </div>
+
+        <div class="page" id="history">
+            <div id="history-list">
+                </div>
+        </div>
+
     </div>
 
     <script>
-        function generate() {
-            const n = btoa(document.getElementById('nama').value);
-            const f = btoa(document.getElementById('foto').value);
-            const m = btoa(document.getElementById('musik').value);
-            const p = btoa(document.getElementById('pesan').value);
+        // --- SPA LOGIC ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
 
-            // Ganti 'view.html' sesuai nama file penampil kamu
-            const url = window.location.origin + window.location.pathname.replace('index.html', '') + `view.html?n=${n}&f=${f}&m=${m}&p=${p}`;
+        function showPage(pageId, element) {
+            // Update UI Menu
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
             
-            document.getElementById('result').style.display = 'block';
-            document.getElementById('linkResult').value = url;
+            // Update Title
+            document.getElementById('page-title').innerText = pageId.charAt(0).toUpperCase() + pageId.slice(1);
+
+            // Switch Page
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            if(pageId === 'history') loadHistory();
+            if(pageId === 'dashboard') updateDashboard();
+            
+            toggleSidebar(); // Close sidebar after click
+        }
+
+        // --- CORE LOGIC ---
+        function generateLink() {
+            const n = encodeURIComponent(document.getElementById('nama').value);
+            const f = encodeURIComponent(document.getElementById('foto').value);
+            const m = encodeURIComponent(document.getElementById('musik').value);
+            const p = encodeURIComponent(document.getElementById('pesan').value);
+
+            const path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+            const finalUrl = window.location.origin + path + `view.html?n=${n}&f=${f}&m=${m}&p=${p}`;
+
+            // Tampilkan hasil
+            document.getElementById('result-box').style.display = 'block';
+            document.getElementById('finalUrl').value = finalUrl;
+
+            // Simpan ke History (localStorage)
+            saveToHistory(document.getElementById('nama').value, finalUrl);
+        }
+
+        function saveToHistory(name, url) {
+            let history = JSON.parse(localStorage.getItem('confessHistory') || "[]");
+            history.unshift({ name: name, url: url, date: new Date().toLocaleDateString() });
+            localStorage.setItem('confessHistory', JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const list = document.getElementById('history-list');
+            let history = JSON.parse(localStorage.getItem('confessHistory') || "[]");
+            
+            if(history.length === 0) {
+                list.innerHTML = `<div class="glass-card">Belum ada history. Ayo buat satu!</div>`;
+                return;
+            }
+
+            list.innerHTML = history.map((item, index) => `
+                <div class="history-item">
+                    <div>
+                        <strong style="color:var(--accent)">${item.name}</strong><br>
+                        <small style="color:#999">${item.date}</small>
+                    </div>
+                    <div class="copy-small" onclick="copySpecific('${item.url}')">Copy Link</div>
+                </div>
+            `).join('');
+        }
+
+        function updateDashboard() {
+            let history = JSON.parse(localStorage.getItem('confessHistory') || "[]");
+            document.getElementById('count-history').innerText = history.length;
         }
 
         function copyLink() {
-            const copyText = document.getElementById("linkResult");
-            copyText.select();
-            document.execCommand("copy");
-            alert("Link berhasil disalin! Kirim ke dia ya ❤️");
+            const val = document.getElementById('finalUrl');
+            val.select();
+            document.execCommand('copy');
+            alert("Link utama disalin!");
         }
+
+        function copySpecific(url) {
+            navigator.clipboard.writeText(url);
+            alert("Link history disalin!");
+        }
+
+        window.onload = updateDashboard;
     </script>
 </body>
 </html>
