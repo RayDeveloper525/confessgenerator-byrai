@@ -29,19 +29,29 @@
             align-items: center;
         }
 
-        .heart-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        /* --- Floating Hearts --- */
+        .heart-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+        }
         .heart {
             position: absolute; bottom: -10%; background-color: var(--accent-pink);
             width: 12px; height: 12px; transform: rotate(45deg);
             opacity: 0.15; animation: float 12s infinite linear;
         }
-        .heart::before, .heart::after { content: ''; position: absolute; width: 100%; height: 100%; background-color: inherit; border-radius: 50%; }
-        .heart::before { top: -50%; left: 0; } .heart::after { left: -50%; top: 0; }
+        .heart::before, .heart::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            background-color: inherit; border-radius: 50%;
+        }
+        .heart::before { top: -50%; left: 0; }
+        .heart::after { left: -50%; top: 0; }
         @keyframes float {
             0% { transform: translateY(0) rotate(45deg); opacity: 0; }
+            50% { opacity: 0.3; }
             100% { transform: translateY(-110vh) rotate(45deg); opacity: 0; }
         }
 
+        /* --- Audio Button --- */
         #music-toggle {
             position: fixed; top: 20px; right: 20px; z-index: 100;
             background: var(--glass-bg); border: 1px solid var(--glass-border);
@@ -49,42 +59,90 @@
             cursor: pointer; font-size: 1.2rem; display: none;
         }
 
-        .slide-container { width: 90%; max-width: 500px; position: relative; }
-        .glass-card {
-            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border); border-radius: 30px; padding: 40px; text-align: center;
-            box-shadow: 0 10px 40px rgba(240, 98, 146, 0.1); position: absolute;
-            top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); width: 100%;
-            opacity: 0; visibility: hidden; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        /* --- Container & Slides --- */
+        .slide-container {
+            width: 90%;
+            max-width: 500px;
+            position: relative;
         }
-        .glass-card.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(240, 98, 146, 0.1);
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
 
         h2 { font-family: 'Playfair Display', serif; color: var(--accent-pink); margin-bottom: 20px; font-size: 1.8rem; }
         p { line-height: 1.6; color: #555; font-size: 1rem; }
 
+        /* --- Feature: Scratch/Blur Text --- */
         .blur-container { margin: 20px 0; position: relative; }
         .blur-text {
-            filter: blur(10px); transition: filter 0.6s ease; cursor: pointer;
-            background: rgba(240, 98, 146, 0.1); padding: 10px; border-radius: 10px;
-            user-select: none; display: inline-block;
+            filter: blur(10px);
+            transition: filter 0.6s ease;
+            cursor: pointer;
+            background: rgba(240, 98, 146, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            user-select: none;
+            display: inline-block;
         }
         .blur-text:hover { filter: blur(0); }
 
-        .meter-box { background: #eee; height: 12px; border-radius: 10px; margin: 20px 0; overflow: hidden; display: none; }
-        .meter-fill { background: var(--accent-pink); height: 100%; width: 0%; transition: width 0.1s linear; }
+        /* --- Feature: Love Meter --- */
+        .meter-box {
+            background: #eee;
+            height: 12px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+        .meter-fill {
+            background: var(--accent-pink);
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
 
+        /* --- Photo Frame --- */
         .photo-frame {
             width: 140px; height: 140px; margin: 0 auto 25px;
-            border-radius: 50%; overflow: hidden; border: 4px solid white;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border-radius: 50%; overflow: hidden;
+            border: 4px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.05);
         }
         .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* --- Buttons --- */
         .btn-wrap { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; align-items: center; position: relative; }
-        .btn { padding: 12px 35px; border-radius: 50px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; width: 100%; max-width: 250px; }
-        .btn-next { background: var(--accent-pink); color: white; }
+        .btn {
+            padding: 12px 35px; border-radius: 50px; border: none;
+            font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; width: 100%; max-width: 250px;
+        }
+        .btn-next { background: var(--accent-pink); color: white; box-shadow: 0 4px 15px rgba(240, 98, 146, 0.3); }
         .btn-mikir { background: transparent; color: var(--accent-pink); border: 1px solid var(--accent-pink); font-size: 0.8rem; }
+        
         #btn-no { background: #eee; color: #888; position: absolute; width: auto; }
+
         #typewriter { font-style: italic; min-height: 2em; color: #888; margin-top: 10px; font-size: 0.9rem; }
         .hidden { display: none; }
     </style>
@@ -97,8 +155,9 @@
     <div class="heart-bg" id="heartContainer"></div>
 
     <div class="slide-container">
+        
         <div class="glass-card active" id="slide-1">
-            <h2 id="display-nama1">Haii, Kamu</h2>
+            <h2 id="disp-nama1">Haii, [Nama Dia]</h2>
             <p>Ada sebuah pesan kecil yang ingin aku tunjukkan kepadamu. Meluangkan waktu sebentar?</p>
             <div class="btn-wrap">
                 <button class="btn btn-next" onclick="nextSlide(2, true)">Buka Pesan ❤️</button>
@@ -107,10 +166,10 @@
 
         <div class="glass-card" id="slide-2">
             <h2>The Secret</h2>
-            <p>Sebenarnya dari dulu aku mau bilang...</p>
+            <p id="disp-mem">Sebenarnya dari dulu aku mau bilang...</p>
             <div class="blur-container">
                 <p class="blur-text" id="blur-box">Usap/Sentuh bagian ini</p>
-                <p id="secret-text" class="hidden" style="color: var(--accent-pink); font-weight: 600;">Pesan Rahasia</p>
+                <p id="secret-text" class="hidden" style="color: var(--accent-pink); font-weight: 600;">"Kamu itu alasan aku semangat sekolah tiap hari!"</p>
             </div>
             <div id="typewriter"></div>
             <div class="btn-wrap">
@@ -121,7 +180,9 @@
         <div class="glass-card" id="slide-3">
             <h2>Chemistry Check</h2>
             <p id="meter-label">Menganalisis kecocokan kita...</p>
-            <div class="meter-box" id="meter-container"><div class="meter-fill" id="meter-fill"></div></div>
+            <div class="meter-box" id="meter-container">
+                <div class="meter-fill" id="meter-fill"></div>
+            </div>
             <h1 id="meter-percent" style="color: var(--accent-pink);">0%</h1>
             <div class="btn-wrap hidden" id="meter-btn">
                 <button class="btn btn-next" onclick="nextSlide(4)">Waduh, Kok Gini? 😂</button>
@@ -129,9 +190,11 @@
         </div>
 
         <div class="glass-card" id="slide-4">
-            <div class="photo-frame"><img id="display-foto" src="https://via.placeholder.com/200" alt="Us"></div>
-            <h2>Will you be mine?</h2>
-            <p id="final-ask">Aku ingin menjadi alasan di balik senyummu setiap hari.</p>
+            <div class="photo-frame">
+                <img id="disp-foto" src="https://via.placeholder.com/200" alt="Us">
+            </div>
+            <h2 id="disp-nama2">Will you be mine?</h2>
+            <p>Aku ingin menjadi alasan di balik senyummu setiap hari. Bagaimana menurutmu?</p>
             <div class="btn-wrap" id="final-btns" style="height: 180px;">
                 <button class="btn btn-next" onclick="showSuccess()">Tentu! ❤️</button>
                 <button class="btn btn-mikir" onclick="mikirDulu()">Mikir dulu deh...</button>
@@ -142,21 +205,27 @@
         <div class="glass-card" id="slide-5">
             <div style="font-size: 4rem; margin-bottom: 20px;">💖</div>
             <h2>Yeay! I'm so happy!</h2>
-            <p>Terima kasih sudah menjadi bagian dari ceritaku.</p>
+            <p>Terima kasih sudah menjadi bagian dari ceritaku. Aku tunggu kabar bahagia darimu di WhatsApp ya! ❤️</p>
+            <button class="btn btn-next" style="background:#25D366; margin-top:20px;" onclick="sendWA()">Hubungi di WA 📲</button>
         </div>
+
     </div>
 
     <script>
-        // --- LOGIKA PENERIMA DATA (PENTING!) ---
+        // --- LOGIKA PENERIMA DATA ---
         const params = new URLSearchParams(window.location.search);
-        const dataNama = decodeURIComponent(params.get('n') || "Kamu");
+        const dataNama = decodeURIComponent(params.get('n') || "Seseorang");
+        const dataWA   = decodeURIComponent(params.get('w') || "");
         const dataFoto = decodeURIComponent(params.get('f') || "https://via.placeholder.com/200");
         const dataMusik = decodeURIComponent(params.get('m') || "");
-        const dataPesan = decodeURIComponent(params.get('p') || "Kamu spesial banget buat aku.");
+        const dataMem  = decodeURIComponent(params.get('mem') || "Sebenarnya dari dulu aku mau bilang...");
+        const dataPesan = decodeURIComponent(params.get('p') || "Kamu itu alasan aku semangat sekolah tiap hari!");
 
-        // Pasang data ke elemen
-        document.getElementById('display-nama1').innerText = "Haii, " + dataNama;
-        document.getElementById('display-foto').src = dataFoto;
+        // Pasang data ke UI
+        document.getElementById('disp-nama1').innerText = "Haii, " + dataNama;
+        document.getElementById('disp-nama2').innerText = "Will you be mine, " + dataNama + "?";
+        document.getElementById('disp-foto').src = dataFoto;
+        document.getElementById('disp-mem').innerText = "Aku nggak pernah lupa momen " + dataMem + ".";
         document.getElementById('secret-text').innerText = dataPesan;
 
         const music = document.getElementById("bgMusic");
@@ -165,64 +234,109 @@
 
         function nextSlide(step, startMusic = false) {
             document.querySelectorAll('.glass-card').forEach(card => card.classList.remove('active'));
+            
             setTimeout(() => {
-                document.getElementById(`slide-${step}`).classList.add('active');
+                const target = document.getElementById(`slide-${step}`);
+                target.classList.add('active');
+                
                 if(step === 2) handleBlur();
                 if(step === 3) handleMeter();
             }, 100);
+
             if (startMusic) {
-                music.play().catch(() => console.log("Music click required"));
+                music.play().catch(() => console.log("User interaction needed for audio"));
                 musicBtn.style.display = "block";
                 startTyping();
             }
         }
 
         function handleBlur() {
-            const box = document.getElementById('blur-box');
-            const sec = document.getElementById('secret-text');
-            box.onclick = () => { box.style.display = 'none'; sec.classList.remove('hidden'); };
-            box.onmouseover = () => { box.style.display = 'none'; sec.classList.remove('hidden'); };
+            const blurBox = document.getElementById('blur-box');
+            blurBox.addEventListener('mouseover', () => {
+                blurBox.style.display = 'none';
+                document.getElementById('secret-text').classList.remove('hidden');
+            });
+            blurBox.addEventListener('click', () => {
+                blurBox.style.display = 'none';
+                document.getElementById('secret-text').classList.remove('hidden');
+            });
         }
 
         function handleMeter() {
             const fill = document.getElementById('meter-fill');
-            const pct = document.getElementById('meter-percent');
-            document.getElementById('meter-container').style.display = 'block';
+            const percentTxt = document.getElementById('meter-percent');
+            const box = document.getElementById('meter-container');
+            box.style.display = 'block';
+            
             let p = 0;
-            const int = setInterval(() => {
-                p++; fill.style.width = p + '%'; pct.innerText = p + '%';
+            const interval = setInterval(() => {
+                p++;
+                fill.style.width = p + '%';
+                percentTxt.innerText = p + '%';
+                
                 if(p === 99) {
-                    clearInterval(int);
+                    clearInterval(interval);
                     setTimeout(() => {
-                        pct.innerText = "9999% ERROR!";
-                        document.getElementById('meter-label').innerText = "Terlalu Cocok!";
+                        percentTxt.innerText = "9999% ERROR!";
+                        percentTxt.style.fontSize = "2rem";
+                        document.getElementById('meter-label').innerText = "Kecocokan Terlalu Tinggi!";
                         document.getElementById('meter-btn').classList.remove('hidden');
                     }, 800);
                 }
             }, 40);
         }
 
-        function mikirDulu() { alert("Waktu habis! Pilih 'Tentu!' atau kejar tombol 'Nggak'."); }
-        function moveNo() {
-            const btn = document.getElementById('btn-no');
-            btn.style.transform = `translate(${(Math.random()-0.5)*300}px, ${(Math.random()-0.5)*300}px)`;
+        function mikirDulu() {
+            alert("Waktu berpikir habis! (Limit: 0.001 detik). Silakan pilih 'Tentu!' atau kejar tombol 'Nggak' kalau bisa.");
         }
+
         function startTyping() {
-            const text = "Kadang kata-kata nggak cukup, tapi ini jujur dari hati...";
-            let i = 0; const el = document.getElementById("typewriter");
-            function type() { if(i<text.length){ el.innerHTML += text.charAt(i); i++; setTimeout(type, 50); }}
-            type();
+            const text = "Mungkin ini terdengar biasa, tapi bagiku ini luar biasa...";
+            let i = 0;
+            const el = document.getElementById("typewriter");
+            el.innerHTML = "";
+            function type() {
+                if (i < text.length) {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                }
+            }
+            setTimeout(type, 1000);
         }
+
         function createHeart() {
-            const c = document.getElementById('heartContainer');
-            const h = document.createElement('div'); h.classList.add('heart');
-            h.style.left = Math.random()*100+'vw'; h.style.animationDuration = Math.random()*5+7+'s';
-            c.appendChild(h); setTimeout(() => h.remove(), 12000);
+            const container = document.getElementById('heartContainer');
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 5 + 7) + 's';
+            container.appendChild(heart);
+            setTimeout(() => heart.remove(), 12000);
         }
         setInterval(createHeart, 600);
-        function showSuccess() { nextSlide(5); for(let i=0; i<40; i++) setTimeout(createHeart, i*100); }
-        function toggleMusic() { if(music.paused){ music.play(); musicBtn.innerText="🎵";} else {music.pause(); musicBtn.innerText="🔇";}}
+
+        function moveNo() {
+            const btn = document.getElementById('btn-no');
+            const x = (Math.random() - 0.5) * 350;
+            const y = (Math.random() - 0.5) * 350;
+            btn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        function showSuccess() {
+            nextSlide(5);
+            for(let i=0; i<40; i++) setTimeout(createHeart, i*100);
+        }
+
+        function sendWA() {
+            const msg = encodeURIComponent(`Haii! Aku baru aja liat pesan spesial dari kamu. Dan jawabannya... YES! ❤️✨`);
+            window.open(`https://wa.me/${dataWA}?text=${msg}`, '_blank');
+        }
+
+        function toggleMusic() {
+            if (music.paused) { music.play(); musicBtn.innerText = "🎵"; } 
+            else { music.pause(); musicBtn.innerText = "🔇"; }
+        }
     </script>
 </body>
-    </html>
-    
+</html>
